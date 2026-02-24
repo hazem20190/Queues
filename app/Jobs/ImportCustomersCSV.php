@@ -7,6 +7,7 @@ use Carbon\Carbon;
 use Illuminate\Bus\Batchable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
+use Illuminate\Queue\Middleware\SkipIfBatchCancelled;
 
 class ImportCustomersCSV implements ShouldQueue
 {
@@ -26,6 +27,16 @@ class ImportCustomersCSV implements ShouldQueue
      */
     public function handle(): void
     {
+
+        // if ($this->batch()->canceled()) {
+        //     return;
+        // }
+        // if ($this->from > 500) {
+        //     $this->batch()->cancel();
+        // }
+
+
+
         $path = storage_path('app/customers-10000.csv');
 
         if (($file = fopen($path, 'r')) !== false) {
@@ -55,5 +66,13 @@ class ImportCustomersCSV implements ShouldQueue
             }
             fclose($file);
         }
+    }
+
+    /**
+     * Get the middleware the job should pass through.
+     */
+    public function middleware(): array
+    {
+        return [new SkipIfBatchCancelled()];
     }
 }
