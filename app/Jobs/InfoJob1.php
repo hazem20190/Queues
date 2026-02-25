@@ -26,6 +26,5 @@ class InfoJob1 implements ShouldQueue
     public function handle(): void
     {
         Log::info("log info 1");
-        ;
     }
 }

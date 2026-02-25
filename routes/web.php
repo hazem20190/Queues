@@ -1,11 +1,12 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
-use App\Jobs\ImportCustomersCSV;
 use App\Jobs\InfoJob1;
 use App\Jobs\InfoJob2;
 use App\Jobs\InfoJob3;
+use Illuminate\Bus\Batch;
 use Illuminate\Support\Facades\Bus;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -18,11 +19,29 @@ Route::get('/', function () {
         new InfoJob1(),
         new InfoJob2(),
         new InfoJob3(),
-        new ImportCustomersCSV(1, 500),
-        new ImportCustomersCSV(501, 1000),
-        new ImportCustomersCSV(1001, 1500),
-        new ImportCustomersCSV(1501, 2000),
-    ])->dispatch();
+        // new ImportCustomersCSV(1, 500),
+        // new ImportCustomersCSV(501, 1000),
+        // new ImportCustomersCSV(1001, 1500),
+        // new ImportCustomersCSV(1501, 2000),
+    ])
+    ->name('infoJob')
+    ->before(function (Batch $batch) {
+        // The batch has been created but no jobs have been added...
+        Log::info('before job');
+    })->progress(function (Batch $batch) {
+        // A single job has completed successfully...
+        Log::info('single job completed');
+    })->then(function (Batch $batch) {
+        // All jobs completed successfully...
+        Log::info('All jobs completed');
+    })->catch(function (Batch $batch, Throwable $e) {
+        // Batch job failure detected...
+        $e->getMessage();
+    })->finally(function (Batch $batch) {
+        // The batch has finished executing...
+        Log::info('All jobs finished');
+    })
+    ->dispatch();
 
     return view('welcome');
 });
