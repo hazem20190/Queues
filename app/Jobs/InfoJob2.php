@@ -26,7 +26,7 @@ class InfoJob2 implements ShouldQueue
      */
     public function handle(): void
     {
-        // throw new Exception("Error Processing job 2", 1);
+        throw new Exception("Error Processing job 2", 1);
 
         Log::info("log info 2");
     }

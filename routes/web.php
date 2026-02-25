@@ -41,6 +41,7 @@ Route::get('/', function () {
         // The batch has finished executing...
         Log::info('All jobs finished');
     })
+    ->allowFailures()
     ->dispatch();
 
     return view('welcome');
